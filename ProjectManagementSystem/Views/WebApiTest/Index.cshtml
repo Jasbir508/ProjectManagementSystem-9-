@@ -1,0 +1,212 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Contract</h2>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br />
+                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Name <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" id="Name" required="required" class="form-control col-md-7 col-xs-12" name="Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            From Date <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" id="FromDate" required="required" class="form-control col-md-7 col-xs-12" name="FromDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            To Date <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" id="ToDate" required="required" class="form-control col-md-7 col-xs-12" name="ToDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Option Year <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" id="OptionYears" required="required" class="form-control col-md-7 col-xs-12" name="OptionYears">
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <input type="hidden" id="ID" name="ID" />
+                    <input type="hidden" id="ContractID" name="1" />
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                            <button type="submit" class="btn btn-success" id="btn1">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Contract Categories List</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="table-responsive">
+                <table class="table table-striped jambo_table bulk_action" id="tab1">
+                    <tr class="headings">
+                        <th class="column-title" width="180px"># </th>
+                        <th class="column-title" width="380px">Name </th>
+                        <th class="column-title" width="180px">From Date </th>
+                        <th class="column-title" width="180px">To Date </th>
+                        <th class="column-title" width="180px">Option Years  </th>
+                        <th class="column-title no-link last" width="240px">
+                            <span class="nobr">Action</span>
+                        </th>
+                    </tr>
+
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function AddEditRecord(id, name, fromDate, toDate, optionYear) {
+        $("#Name").val(name);
+        $("#FromDate").val(fromDate);
+        $("#ToDate").val(toDate);
+        $("#OptionYears").val(optionYear);
+        $("#ID").val(id);
+    }
+
+    function UpdateRecord() {
+        var Name = $("#Name").val();
+        var FromDate = $("#FromDate").val();
+        var ToDate = $("#ToDate").val();
+        var OptionYears = $("#OptionYears").val();
+        $.ajax({
+            type: "put",
+            contentType: "application/json;charset=utf-8",
+            url: "/api/ContractsWebApi/" + $("#ID").val(),
+            data: JSON.stringify({
+                ID: $("#ID").val(),
+                Name: $("#Name").val(),
+                FromDate : $("#FromDate").val(),
+                ToDate : $("#ToDate").val(),
+                OptionYears : $("#OptionYears").val(),
+            }),
+
+            dataType: "JSON",
+
+            success: function (data) {
+                $("#tab1").find("tr:gt(0)").remove();
+                $.getJSON("/api/infoes/", function (data) {
+                    $("#tab1").css("display", "block");
+                    $.each(data, function (key, val) {
+                        $("<tr class='even pointer'><td width='180px'>" + val.ID + "</td><td width='180px'>" + val.Name + "</td><td width='180px'>" + val.FromDate + "</td><td width='180px'>" + val.ToDate + "</td><td width='180px'>" + val.OptionYears + "</td><td width='240px'>" + "<button class='btn btn-warning btn-xs' onclick='AddEditRecord(" + val.ID + ',"' + val.Name + '","' + val.FromDate + '","' + val.ToDate + '","' + val.OptionYears + '"' + ");'" + ">Edit</button> <button class='btn btn-danger btn-xs' onclick='DeleteRecord(" + val.ID + ");'" + ">Delete</button>" + "</td></tr>").appendTo($("#tab1"));
+
+                    })
+
+                })
+
+            }
+        });
+    }
+    //Delete
+    function DeleteRecord(ID) {
+        $.ajax({
+
+            type: "DELETE",
+
+            contentType: "application/json;charset=utf-8",
+
+            url: "/api/ContractsWebApi/" + ID,
+
+            data: JSON.stringify({
+                id: ID,
+            }),
+            dataType: "JSON",
+            success: function (data) {
+                $("#tab1").find("tr:gt(0)").remove();
+                $.getJSON("/api/ContractsWebApi/", function (data) {
+                    $("#tab1").css("display", "block");
+                    $.each(data, function (key, val) {
+                        $("<tr class='even pointer'><td width='180px'>" + val.ID + "</td><td width='180px'>" + val.Name + "</td><td width='180px'>" + val.FromDate + "</td><td width='180px'>" + val.ToDate + "</td><td width='180px'>" + val.OptionYears + "</td><td width='240px'>" + "<button class='btn btn-warning btn-xs' onclick='AddEditRecord(" + val.ID + ',"' + val.Name + '","' + val.FromDate + '","' + val.ToDate + '","' + val.OptionYears + '"' + ");'" + ">Edit</button> <button class='btn btn-danger btn-xs' onclick='DeleteRecord(" + val.ID + ");'" + ">Delete</button>" + "</td></tr>").appendTo($("#tab1"));
+
+                    })
+
+                })
+            }
+        });
+    }
+    $(document).ready(function () {
+        $("#tab1").css("display", "none");
+        $.getJSON("/api/ContractsWebApi/", function (data) {
+            $("#tab1").css("display", "block");
+            $.each(data, function (key, val) {
+                $("<tr class='even pointer'><td width='180px'>" + val.ID + "</td><td width='180px'>" + val.Name + "</td><td width='180px'>" + val.FromDate + "</td><td width='180px'>" + val.ToDate + "</td><td width='180px'>" + val.OptionYears + "</td><td width='240px'>" + "<button class='btn btn-warning btn-xs' onclick='AddEditRecord(" + val.ID + ',"' + val.Name + '","' + val.FromDate + '","' + val.ToDate + '","' + val.OptionYears + '"' + ");'" + ">Edit</button> <button class='btn btn-danger btn-xs' onclick='DeleteRecord(" + val.ID + ");'" + ">Delete</button>" + "</td></tr>").appendTo($("#tab1"));
+            });
+        })
+
+        //POST
+        $("#btn1").click(function () {
+            if ($("#ID").val() > 0) {
+                UpdateRecord();
+            }
+            else {
+                var Name = $("#Name").val();
+                var FromDate = $("#FromDate").val();
+                var ToDate = $("#ToDate").val();
+                var OptionYears = $("#OptionYears").val();
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    url: "/api/ContractsWebApi/",
+                    data: JSON.stringify({
+                        Name: $("#Name").val(),
+                        FromDate: $("#FromDate").val(),
+                        ToDate: $("#ToDate").val(),
+                        OptionYears: $("#OptionYears").val(),
+                    }),
+                    dataType: "JSON",
+                    success: function (data) {
+                        $("#ID").val('');
+                        $("#tab1").find("tr:gt(0)").remove();
+                        $.getJSON("/api/ContractsWebApi/", function (data) {
+                            $("#tab1").css("display", "block");
+                            $.each(data, function (key, val) {
+                                $("<tr class='even pointer'><td width='180px'>" + val.ID + "</td><td width='180px'>" + val.Name + "</td><td width='180px'>" + val.FromDate + "</td><td width='180px'>" + val.ToDate + "</td><td width='180px'>" + val.OptionYears + "</td><td width='240px'>" + "<button class='btn btn-warning btn-xs' onclick='AddEditRecord(" + val.ID + ',"' + val.Name + '","' + val.FromDate + '","' + val.ToDate + '","' + val.OptionYears + '"' + ");'" + ">Edit</button> <button class='btn btn-danger btn-xs' onclick='DeleteRecord(" + val.ID + ");'" + ">Delete</button>" + "</td></tr>").appendTo($("#tab1"));
+
+                            })
+
+                        })
+
+
+
+                    }
+                });
+            }
+
+        })
+    });
+
+</script>

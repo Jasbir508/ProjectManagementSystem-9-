@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ProjectManagementSystem.Models.TaskOrder>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="float-right">
+    <button style=" float: left;margin-left: 41px;" class="btn btn-success" onclick="location.href='@Url.Action("Create", "TaskOrders")';return false;">Create</button>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Task Order List</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Contract.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Code)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Contract.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
